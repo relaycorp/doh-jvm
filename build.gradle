@@ -1,0 +1,128 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+buildscript{
+  ext {
+    kotlinVersion = '1.4.21'
+    kotlinCoroutinesVersion = '1.4.1'
+    junit5Version = '5.7.0'
+  }
+}
+
+plugins {
+  id("org.jetbrains.kotlin.jvm") version "$kotlinVersion"
+  id('java-library')
+  id("org.jetbrains.dokka") version "0.10.0"
+  id('maven-publish')
+  id("com.diffplug.spotless") version "5.8.2"
+  id('idea')
+}
+
+group = "tech.relaycorp"
+
+repositories {
+  jcenter()
+}
+
+dependencies {
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1"
+
+  testImplementation("org.jetbrains.kotlin:kotlin-test")
+  testImplementation("org.junit.jupiter:junit-jupiter:$junit5Version")
+  testImplementation("org.junit.jupiter:junit-jupiter-params:$junit5Version")
+  testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion")
+}
+
+kotlin {
+  explicitApi()
+}
+
+java {
+  withJavadocJar()
+  withSourcesJar()
+}
+
+tasks.withType(KotlinCompile).configureEach {
+  kotlinOptions.jvmTarget = "1.8"
+}
+
+tasks.withType(KotlinCompile).all {
+  kotlinOptions.freeCompilerArgs = kotlinOptions.freeCompilerArgs + [
+          "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+          "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
+          "-Xuse-experimental=kotlin.time.ExperimentalTime"
+  ]
+}
+
+test {
+  useJUnitPlatform()
+}
+
+// Documentation
+
+tasks.dokka {
+  outputFormat = "html"
+  outputDirectory = "$buildDir/javadoc"
+}
+
+// Publishing
+
+publishing {
+  publications {
+    create("default", MavenPublication) {
+      from(components["java"])
+
+      pom {
+        name.set(rootProject.name)
+        description.set("DNS-over-HTTPS library")
+        url.set("https://github.com/relaycorp/doh")
+        developers {
+          developer {
+            id.set("relaycorp")
+            name.set("Relaycorp, Inc.")
+            email.set("no-reply@relaycorp.tech")
+          }
+        }
+        licenses {
+          license {
+            name.set("Apache-2.0")
+          }
+        }
+        scm {
+          connection.set("scm:git:https://github.com/relaycorp/doh.git")
+          developerConnection.set(
+                  "scm:git:https://github.com/relaycorp/doh.git"
+          )
+          url.set("https://github.com/relaycorp/doh")
+        }
+      }
+    }
+  }
+  repositories {
+    maven {
+      // publish=1 automatically publishes the version
+      url = uri(
+              "https://api.bintray.com/maven/relaycorp/maven/tech.relaycorp.doh/;publish=1"
+      )
+      credentials {
+        username = System.getenv("BINTRAY_USERNAME")
+        password = System.getenv("BINTRAY_KEY")
+      }
+    }
+  }
+}
+
+// Lint
+
+spotless {
+  def ktlintUserData = [
+          "max_line_length": "100",
+          "disabled_rules": "import-ordering"
+  ]
+  kotlin {
+    ktlint("0.37.0").userData(ktlintUserData)
+  }
+  kotlinGradle {
+    ktlint().userData(ktlintUserData)
+  }
+}

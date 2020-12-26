@@ -1,0 +1,6 @@
+{
+  "name": "doh",
+  "devDependencies": {
+    "gradle-semantic-release-plugin": "^1.4.8"
+  }
+}

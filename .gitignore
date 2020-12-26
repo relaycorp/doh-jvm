@@ -1,0 +1,6 @@
+.gradle
+build
+
+# Ignore `semantic-release` dependencies
+node_modules/
+package-lock.json
