@@ -2,20 +2,22 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript{
   ext {
-    kotlinVersion = '1.4.21'
     kotlinCoroutinesVersion = '1.4.1'
     junit5Version = '5.7.0'
   }
 }
 
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "$kotlinVersion"
+  id("org.jetbrains.kotlin.jvm") version "1.4.21"
   id('java-library')
   id("org.jetbrains.dokka") version "0.10.0"
   id('maven-publish')
   id("com.diffplug.spotless") version "5.8.2"
+  id('jacoco')
   id('idea')
 }
+
+apply from: 'jacoco.gradle'
 
 group = "tech.relaycorp"
 
@@ -24,7 +26,7 @@ repositories {
 }
 
 dependencies {
-  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
 
   testImplementation("org.jetbrains.kotlin:kotlin-test")
   testImplementation("org.junit.jupiter:junit-jupiter:$junit5Version")
