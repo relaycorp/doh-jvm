@@ -75,7 +75,7 @@ publishing {
       pom {
         name.set(rootProject.name)
         description.set("DNS-over-HTTPS library")
-        url.set("https://github.com/relaycorp/doh")
+        url.set("https://github.com/relaycorp/doh-jvm")
         developers {
           developer {
             id.set("relaycorp")
@@ -89,11 +89,11 @@ publishing {
           }
         }
         scm {
-          connection.set("scm:git:https://github.com/relaycorp/doh.git")
+          connection.set("scm:git:https://github.com/relaycorp/doh-jvm.git")
           developerConnection.set(
-                  "scm:git:https://github.com/relaycorp/doh.git"
+                  "scm:git:https://github.com/relaycorp/doh-jvm.git"
           )
-          url.set("https://github.com/relaycorp/doh")
+          url.set("https://github.com/relaycorp/doh-jvm")
         }
       }
     }
