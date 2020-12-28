@@ -79,7 +79,7 @@ class DoHClientTest {
                 respondDNSMessage(dummyResponseMessage)
             }
 
-            client.lookup(recordName, recordType)
+            client.lookUp(recordName, recordType)
 
             assertEquals("application/dns-message", contentType)
         }
@@ -92,7 +92,7 @@ class DoHClientTest {
                 respondDNSMessage(dummyResponseMessage)
             }
 
-            client.lookup(recordName, recordType)
+            client.lookUp(recordName, recordType)
 
             assertEquals("application/dns-message", accept)
         }
@@ -105,7 +105,7 @@ class DoHClientTest {
                 respondDNSMessage(dummyResponseMessage)
             }
 
-            client.lookup(recordName, recordType)
+            client.lookUp(recordName, recordType)
 
             assertEquals(HttpMethod.Post, method)
         }
@@ -118,7 +118,7 @@ class DoHClientTest {
                 respondDNSMessage(dummyResponseMessage)
             }
 
-            client.lookup(recordName, recordType)
+            client.lookUp(recordName, recordType)
 
             assertEquals(DoHClient.DEFAULT_RESOLVER_URL, url)
         }
@@ -130,7 +130,7 @@ class DoHClientTest {
             }
 
             val exception =
-                assertThrows<LookupFailureException> { client.lookup(recordName, recordType) }
+                assertThrows<LookupFailureException> { client.lookUp(recordName, recordType) }
 
             assertEquals(
                 "Unexpected HTTP response code (${HttpStatusCode.BadRequest})",
@@ -145,7 +145,7 @@ class DoHClientTest {
             }
 
             val exception =
-                assertThrows<LookupFailureException> { client.lookup(recordName, recordType) }
+                assertThrows<LookupFailureException> { client.lookUp(recordName, recordType) }
 
             assertEquals(
                 "Failed to connect to ${DoHClient.DEFAULT_RESOLVER_URL}",
@@ -165,7 +165,7 @@ class DoHClientTest {
                     respondDNSMessage(dummyResponseMessage)
                 }
 
-                client.lookup(recordName, recordType)
+                client.lookUp(recordName, recordType)
 
                 assertNotNull(requestBody)
                 val query = Message(requestBody!!)
@@ -183,7 +183,7 @@ class DoHClientTest {
                     respondDNSMessage(dummyResponseMessage)
                 }
 
-                client.lookup(recordName.trimEnd('.'), recordType)
+                client.lookUp(recordName.trimEnd('.'), recordType)
 
                 assertNotNull(requestBody)
                 val query = Message(requestBody!!)
@@ -199,7 +199,7 @@ class DoHClientTest {
                     respondDNSMessage(dummyResponseMessage)
                 }
 
-                client.lookup(recordName, recordType)
+                client.lookUp(recordName, recordType)
 
                 assertNotNull(requestBody)
                 val query = Message(requestBody!!)
@@ -214,7 +214,7 @@ class DoHClientTest {
                 val invalidType = "FOOBAR"
 
                 val exception =
-                    assertThrows<InvalidQueryException> { client.lookup(recordName, invalidType) }
+                    assertThrows<InvalidQueryException> { client.lookUp(recordName, invalidType) }
 
                 assertEquals("Invalid record type '$invalidType'", exception.message)
                 assertTrue(exception.cause is InvalidTypeException)
@@ -229,7 +229,7 @@ class DoHClientTest {
                     respondDNSMessage(dummyResponseMessage)
                 }
 
-                client.lookup(recordName, recordType)
+                client.lookUp(recordName, recordType)
 
                 assertNotNull(requestBody)
                 val query = Message(requestBody!!)
@@ -245,7 +245,7 @@ class DoHClientTest {
                     respondDNSMessage(dummyResponseMessage)
                 }
 
-                client.lookup(recordName, recordType)
+                client.lookUp(recordName, recordType)
 
                 assertNotNull(requestBody)
                 val query = Message(requestBody!!)
@@ -264,7 +264,7 @@ class DoHClientTest {
                 }
 
                 val exception =
-                    assertThrows<LookupFailureException> { client.lookup(recordName, recordType) }
+                    assertThrows<LookupFailureException> { client.lookUp(recordName, recordType) }
 
                 assertEquals("Lookup failed with SERVFAIL error", exception.message)
                 assertNull(exception.cause)
@@ -277,7 +277,7 @@ class DoHClientTest {
                 }
 
                 val exception =
-                    assertThrows<LookupFailureException> { client.lookup(recordName, recordType) }
+                    assertThrows<LookupFailureException> { client.lookUp(recordName, recordType) }
 
                 assertEquals("Returned DNS message is malformed", exception.message)
                 assertTrue(exception.cause is WireParseException)
@@ -291,7 +291,7 @@ class DoHClientTest {
                 }
 
                 val exception =
-                    assertThrows<LookupFailureException> { client.lookup(recordName, recordType) }
+                    assertThrows<LookupFailureException> { client.lookUp(recordName, recordType) }
 
                 assertEquals("Answer data is empty", exception.message)
             }
@@ -302,7 +302,7 @@ class DoHClientTest {
                     respondDNSMessage(dummyResponseMessage)
                 }
 
-                val answer = client.lookup(recordName, recordType)
+                val answer = client.lookUp(recordName, recordType)
 
                 assertEquals(listOf(recordData), answer.data)
             }
@@ -321,7 +321,7 @@ class DoHClientTest {
                     respondDNSMessage(responseMessage)
                 }
 
-                val answer = client.lookup(recordName, recordType)
+                val answer = client.lookUp(recordName, recordType)
 
                 assertEquals(listOf(recordData, additionalRecordData), answer.data)
             }

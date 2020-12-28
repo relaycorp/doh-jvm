@@ -24,6 +24,8 @@ import java.io.IOException
 
 /**
  * DNS-over-HTTPS (DoH) client.
+ *
+ * @param resolverURL The URL to the DoH resolver (defaults to Cloudflare)
  */
 public class DoHClient(public val resolverURL: String = DEFAULT_RESOLVER_URL) : Closeable {
     private val ktorEngine = OkHttp.create {
@@ -45,7 +47,7 @@ public class DoHClient(public val resolverURL: String = DEFAULT_RESOLVER_URL) : 
     // https://github.com/dnsjava/dnsjava/issues/146
     @Suppress("BlockingMethodInNonBlockingContext")
     @Throws(DoHException::class)
-    public suspend fun lookup(name: String, type: String): Answer {
+    public suspend fun lookUp(name: String, type: String): Answer {
         val querySerialised = makeQuery(name, type)
         val response: HttpResponse = try {
             ktorClient.post(resolverURL) {
@@ -96,6 +98,9 @@ public class DoHClient(public val resolverURL: String = DEFAULT_RESOLVER_URL) : 
         internal val DNS_MESSAGE_CONTENT_TYPE = ContentType("application", "dns-message")
     }
 
+    /**
+     * Release the underlying resources used by the client.
+     */
     override fun close() {
         ktorClient.close()
     }
