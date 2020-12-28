@@ -2,35 +2,59 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript{
   ext {
-    kotlinVersion = '1.4.21'
     kotlinCoroutinesVersion = '1.4.2'
+    ktorVersion = '1.4.1'
     junit5Version = '5.7.0'
+    okhttpVersion = '4.9.0'
   }
 }
 
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "$kotlinVersion"
+  id("org.jetbrains.kotlin.jvm") version "1.4.21"
   id('java-library')
   id("org.jetbrains.dokka") version "0.10.0"
   id('maven-publish')
   id("com.diffplug.spotless") version "5.8.2"
+  id('jacoco')
   id('idea')
 }
 
+apply from: 'jacoco.gradle'
+
 group = "tech.relaycorp"
+
+sourceSets {
+  integrationTest {
+    compileClasspath += sourceSets.main.output
+    runtimeClasspath += sourceSets.main.output
+  }
+}
+
+configurations {
+  integrationTestImplementation.extendsFrom testImplementation
+  integrationTestRuntimeOnly.extendsFrom runtimeOnly
+}
 
 repositories {
   jcenter()
 }
 
 dependencies {
-  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
+
+  implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
+  implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
+  implementation("dnsjava:dnsjava:3.3.1")
 
   testImplementation("org.jetbrains.kotlin:kotlin-test")
   testImplementation("org.junit.jupiter:junit-jupiter:$junit5Version")
   testImplementation("org.junit.jupiter:junit-jupiter-params:$junit5Version")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion")
+  testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
+  testImplementation("org.mockito:mockito-inline:3.6.28")
+  testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
+  testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
 }
 
 kotlin {
@@ -58,6 +82,19 @@ test {
   useJUnitPlatform()
 }
 
+task integrationTest(type: Test) {
+  description = 'Integration tests'
+  group = 'verification'
+
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
+  classpath = sourceSets.integrationTest.runtimeClasspath
+  shouldRunAfter test
+
+  useJUnitPlatform()
+}
+
+check.dependsOn integrationTest
+
 // Documentation
 
 tasks.dokka {
@@ -75,7 +112,7 @@ publishing {
       pom {
         name.set(rootProject.name)
         description.set("DNS-over-HTTPS library")
-        url.set("https://github.com/relaycorp/doh")
+        url.set("https://github.com/relaycorp/doh-jvm")
         developers {
           developer {
             id.set("relaycorp")
@@ -89,11 +126,11 @@ publishing {
           }
         }
         scm {
-          connection.set("scm:git:https://github.com/relaycorp/doh.git")
+          connection.set("scm:git:https://github.com/relaycorp/doh-jvm.git")
           developerConnection.set(
-                  "scm:git:https://github.com/relaycorp/doh.git"
+                  "scm:git:https://github.com/relaycorp/doh-jvm.git"
           )
-          url.set("https://github.com/relaycorp/doh")
+          url.set("https://github.com/relaycorp/doh-jvm")
         }
       }
     }

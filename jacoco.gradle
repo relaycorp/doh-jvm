@@ -1,0 +1,45 @@
+jacoco {
+  toolVersion = "0.8.6"
+}
+
+tasks.jacocoTestReport {
+  reports {
+    xml.enabled = true
+    html.enabled = true
+    html.destination = file("$buildDir/reports/coverage")
+  }
+}
+
+tasks.jacocoTestCoverageVerification {
+  violationRules {
+    rule {
+      limit {
+        counter = "CLASS"
+        value = "MISSEDCOUNT"
+        maximum = "0".toBigDecimal()
+      }
+      limit {
+        counter = "METHOD"
+        value = "MISSEDCOUNT"
+        maximum = "0".toBigDecimal()
+      }
+      limit {
+        counter = "BRANCH"
+        value = "MISSEDCOUNT"
+        maximum = "0".toBigDecimal()
+      }
+    }
+  }
+}
+
+tasks.test {
+  useJUnitPlatform()
+  testLogging {
+    events("passed", "skipped", "failed")
+  }
+  finalizedBy("jacocoTestReport")
+  doLast {
+    println("View code coverage at:")
+    println("file://$buildDir/reports/coverage/index.html")
+  }
+}
