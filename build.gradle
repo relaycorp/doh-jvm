@@ -52,7 +52,7 @@ dependencies {
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion")
   testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
-  testImplementation("org.mockito:mockito-inline:3.6.28")
+  testImplementation("org.mockito:mockito-inline:3.7.7")
   testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
   testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
 }
