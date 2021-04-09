@@ -10,7 +10,7 @@ For security reasons, DNSSEC validation can't be turned off, but we're open to c
 
 ## Install
 
-You can get this library from JCenter:
+You can get this library from Maven Central:
 
 ```
 implementation "tech.relaycorp:doh:1.0.0"
