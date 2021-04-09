@@ -13,10 +13,13 @@ plugins {
   id("org.jetbrains.kotlin.jvm") version "1.4.31"
   id('java-library')
   id("org.jetbrains.dokka") version "0.10.0"
-  id('maven-publish')
   id("com.diffplug.spotless") version "5.11.0"
   id('jacoco')
   id('idea')
+
+  id('signing')
+  id('maven-publish')
+  id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
 }
 
 apply from: 'jacoco.gradle'
@@ -36,7 +39,7 @@ configurations {
 }
 
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 dependencies {
@@ -104,6 +107,15 @@ tasks.dokka {
 
 // Publishing
 
+signing {
+  useGpgCmd()
+  required { gradle.taskGraph.hasTask("publish") }
+  def signingKeyId = findProperty("signingKeyId")
+  def signingKey = findProperty("signingKey")
+  def signingPassword = findProperty("signingPassword")
+  useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+  sign publishing.publications
+}
 publishing {
   publications {
     create("default", MavenPublication) {
@@ -137,16 +149,28 @@ publishing {
   }
   repositories {
     maven {
-      // publish=1 automatically publishes the version
-      url = uri(
-              "https://api.bintray.com/maven/relaycorp/maven/tech.relaycorp.doh/;publish=1"
-      )
+      url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
       credentials {
-        username = System.getenv("BINTRAY_USERNAME")
-        password = System.getenv("BINTRAY_KEY")
+        username = System.getenv("MAVEN_USERNAME")
+        password = System.getenv("MAVEN_PASSWORD")
       }
     }
   }
+}
+nexusPublishing {
+  repositories {
+    sonatype {
+      nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+      snapshotRepositoryUrl.set(
+              uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+      )
+      username.set(System.getenv("MAVEN_USERNAME"))
+      password.set(System.getenv("MAVEN_PASSWORD"))
+    }
+  }
+}
+tasks.publish {
+  finalizedBy("closeAndReleaseSonatypeStagingRepository")
 }
 
 // Lint
