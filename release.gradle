@@ -1,0 +1,65 @@
+signing {
+    useGpgCmd()
+    required { gradle.taskGraph.hasTask("publish") }
+    def signingKeyId = findProperty("signingKeyId")
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    sign publishing.publications
+}
+publishing {
+    publications {
+        create("default", MavenPublication) {
+            from(components["java"])
+
+            pom {
+                name.set(rootProject.name)
+                description.set("DNS-over-HTTPS library")
+                url.set("https://github.com/relaycorp/doh-jvm")
+                developers {
+                    developer {
+                        id.set("relaycorp")
+                        name.set("Relaycorp, Inc.")
+                        email.set("no-reply@relaycorp.tech")
+                    }
+                }
+                licenses {
+                    license {
+                        name.set("Apache-2.0")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:https://github.com/relaycorp/doh-jvm.git")
+                    developerConnection.set(
+                            "scm:git:https://github.com/relaycorp/doh-jvm.git"
+                    )
+                    url.set("https://github.com/relaycorp/doh-jvm")
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }
+    }
+}
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(
+                    uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            )
+            username.set(System.getenv("MAVEN_USERNAME"))
+            password.set(System.getenv("MAVEN_PASSWORD"))
+        }
+    }
+}
+tasks.publish {
+    finalizedBy("closeAndReleaseSonatypeStagingRepository")
+}
