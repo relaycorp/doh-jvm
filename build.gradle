@@ -101,12 +101,9 @@ check.dependsOn integrationTest
 
 // Documentation
 
-dokkaHtml.configure {
-  dokkaSourceSets {
-    configureEach {
-      reportUndocumented.set(true)
-    }
-  }
+tasks.dokka {
+  outputFormat = "html"
+  outputDirectory = "$buildDir/javadoc"
 }
 
 // Lint
