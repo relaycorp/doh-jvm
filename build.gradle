@@ -4,7 +4,7 @@ buildscript{
   ext {
     kotlinCoroutinesVersion = '1.4.3'
     ktorVersion = '1.4.1'
-    junit5Version = '5.7.1'
+    junit5Version = '5.7.2'
     okhttpVersion = '4.9.1'
   }
 }
@@ -13,13 +13,13 @@ plugins {
   id("org.jetbrains.kotlin.jvm") version "1.4.32"
   id('java-library')
   id("org.jetbrains.dokka") version "0.10.0"
-  id("com.diffplug.spotless") version "5.12.0"
+  id("com.diffplug.spotless") version "5.14.0"
   id('jacoco')
   id('idea')
 
   id('signing')
   id('maven-publish')
-  id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
+  id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
 
 apply from: 'jacoco.gradle'
@@ -56,7 +56,7 @@ dependencies {
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion")
   testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
-  testImplementation("org.mockito:mockito-inline:3.9.0")
+  testImplementation("org.mockito:mockito-inline:3.11.2")
   testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
   testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
 }
