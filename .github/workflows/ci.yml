@@ -32,7 +32,7 @@ jobs:
 
       - uses: eskatos/gradle-command-action@v1
         with:
-          arguments: build
+          arguments: build dokkaHtml
 
   release:
     needs: ci
@@ -57,15 +57,19 @@ jobs:
       - name: Generate docs
         uses: eskatos/gradle-command-action@v1
         with:
-          arguments: dokka
+          arguments: dokkaHtml
 
       # Ridiculous workaround for https://github.com/Kotlin/dokka/issues/163
-      - name: Move Dokka's stylesheet into a sensible place
+      - name: Move Dokka's assets into a sensible place
         run: |
           set -x -o nounset -o errexit -o pipefail
-          cd ./build/javadoc
-          mv ./style.css ./doh/
-          find . -name '*.html' -print0 | xargs -0 sed -i 's;../style.css;style.css;g'
+          cd ./build/dokka/html
+          mv ./styles ./images ./scripts navigation.html index.html ./doh/
+          find ./doh/ -name '*.html' -print0 | xargs -0 sed -i 's;../styles/;styles/;g'
+          find ./doh/ -name '*.html' -print0 | xargs -0 sed -i 's;../images/;images/;g'
+          find ./doh/ -name '*.html' -print0 | xargs -0 sed -i 's;../scripts/;scripts/;g'
+          find ./doh/ -name '*.html' -print0 | xargs -0 sed -i 's;pathToRoot = "../;pathToRoot = ";g'
+          sed -i 's;href="doh/;href=";g' ./doh/navigation.html
 
       - name: Setup Node.js
         uses: actions/setup-node@v1
