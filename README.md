@@ -10,13 +10,7 @@ For security reasons, DNSSEC validation can't be turned off, but we're open to c
 
 ## Install
 
-You can get this library from Maven Central:
-
-```
-implementation "tech.relaycorp:doh:1.0.0"
-```
-
-Check the [GitHub releases](https://github.com/relaycorp/doh-jvm/releases) to find the latest version.
+You can get this library from [Maven Central](https://search.maven.org/artifact/tech.relaycorp/doh).
 
 ## Usage
 

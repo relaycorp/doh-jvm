@@ -81,7 +81,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3.6.1
         with:
           publish_branch: gh-pages
-          publish_dir: ./build/javadoc/doh
+          publish_dir: ./build/dokka/html/doh
           allow_empty_commit: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Release
