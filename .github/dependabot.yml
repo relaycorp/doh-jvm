@@ -7,11 +7,6 @@ updates:
     time: "08:00"
     timezone: Etc/UCT
   open-pull-requests-limit: 99
-  ignore:
-    - dependency-name: "kotlinCoroutinesVersion"
-      versions:
-        - "*-native-mt"
-
 - package-ecosystem: npm
   directory: "/"
   schedule:
