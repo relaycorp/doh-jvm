@@ -2,11 +2,11 @@ package tech.relaycorp.doh
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.features.ClientRequestException
 import io.ktor.client.request.accept
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.ByteArrayContent
 import io.ktor.util.toByteArray
 import okhttp3.OkHttpClient
@@ -54,11 +54,10 @@ public class DoHClient(public val resolverURL: String = DEFAULT_RESOLVER_URL) : 
                 accept(DNS_MESSAGE_CONTENT_TYPE)
                 body = ByteArrayContent(querySerialised, DNS_MESSAGE_CONTENT_TYPE)
             }
+        } catch (exc: ClientRequestException) {
+            throw LookupFailureException("Unexpected HTTP response code (${exc.response.status})")
         } catch (exc: IOException) {
             throw LookupFailureException("Failed to connect to $resolverURL", exc)
-        }
-        if (response.status != HttpStatusCode.OK) {
-            throw LookupFailureException("Unexpected HTTP response code (${response.status})")
         }
         return parseAnswer(response.content.toByteArray())
     }
