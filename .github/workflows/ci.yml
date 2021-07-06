@@ -70,6 +70,7 @@ jobs:
           find ./doh/ -name '*.html' -print0 | xargs -0 sed -i 's;../scripts/;scripts/;g'
           find ./doh/ -name '*.html' -print0 | xargs -0 sed -i 's;pathToRoot = "../;pathToRoot = ";g'
           sed -i 's;href="doh/;href=";g' ./doh/navigation.html
+          sed -i 's;href="doh/;href=";g' ./doh/index.html
 
       - name: Setup Node.js
         uses: actions/setup-node@v1
