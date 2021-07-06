@@ -10,9 +10,9 @@ buildscript{
 }
 
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "1.4.32"
+  id("org.jetbrains.kotlin.jvm") version "1.5.20"
   id('java-library')
-  id("org.jetbrains.dokka") version "0.10.0"
+  id("org.jetbrains.dokka") version "1.4.32"
   id("com.diffplug.spotless") version "5.14.0"
   id('jacoco')
   id('idea')
@@ -48,7 +48,7 @@ dependencies {
 
   implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
   implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
-  implementation("dnsjava:dnsjava:3.3.1")
+  implementation("dnsjava:dnsjava:3.4.0")
 
   testImplementation("org.jetbrains.kotlin:kotlin-test")
   testImplementation("org.junit.jupiter:junit-jupiter:$junit5Version")
@@ -101,9 +101,12 @@ check.dependsOn integrationTest
 
 // Documentation
 
-tasks.dokka {
-  outputFormat = "html"
-  outputDirectory = "$buildDir/javadoc"
+dokkaHtml.configure {
+  dokkaSourceSets {
+    configureEach {
+      reportUndocumented.set(true)
+    }
+  }
 }
 
 // Lint
