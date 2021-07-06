@@ -12,7 +12,6 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.OutgoingContent
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -72,7 +71,7 @@ class DoHClientTest {
         }
 
         @Test
-        fun `Request Content-Type should be application dns-message`() = runBlockingTest {
+        fun `Request Content-Type should be application dns-message`() = runBlocking {
             var contentType: String? = null
             val client = makeTestClient { request ->
                 contentType = request.body.contentType.toString()
@@ -85,7 +84,7 @@ class DoHClientTest {
         }
 
         @Test
-        fun `Request Accept should be application dns-message`() = runBlockingTest {
+        fun `Request Accept should be application dns-message`() = runBlocking {
             var accept: String? = null
             val client = makeTestClient { request ->
                 accept = request.headers["Accept"]
@@ -98,7 +97,7 @@ class DoHClientTest {
         }
 
         @Test
-        fun `Request method should be POST`() = runBlockingTest {
+        fun `Request method should be POST`() = runBlocking {
             var method: HttpMethod? = null
             val client = makeTestClient { request ->
                 method = request.method
@@ -111,7 +110,7 @@ class DoHClientTest {
         }
 
         @Test
-        fun `Request should be made to the specified DoH endpoint`() = runBlockingTest {
+        fun `Request should be made to the specified DoH endpoint`() = runBlocking {
             var url: String? = null
             val client = makeTestClient { request ->
                 url = request.url.toString()
@@ -124,7 +123,7 @@ class DoHClientTest {
         }
 
         @Test
-        fun `Non-200 responses should be treated as errors`() = runBlockingTest {
+        fun `Non-200 responses should be treated as errors`() = runBlocking {
             val client = makeTestClient {
                 respond("Whoops", HttpStatusCode.BadRequest)
             }
@@ -157,7 +156,7 @@ class DoHClientTest {
         @Nested
         inner class Query {
             @Test
-            fun `Specified domain name should be looked up`() = runBlockingTest {
+            fun `Specified domain name should be looked up`() = runBlocking {
                 var requestBody: ByteArray? = null
                 val client = makeTestClient { request ->
                     assertTrue(request.body is OutgoingContent.ByteArrayContent)
@@ -173,7 +172,7 @@ class DoHClientTest {
             }
 
             @Test
-            fun `A trailing dot should be added to names without one`() = runBlockingTest {
+            fun `A trailing dot should be added to names without one`() = runBlocking {
                 assertTrue(recordName.endsWith('.')) // Ensure fixture is suitable
 
                 var requestBody: ByteArray? = null
@@ -191,7 +190,7 @@ class DoHClientTest {
             }
 
             @Test
-            fun `Specified record type should be looked up`() = runBlockingTest {
+            fun `Specified record type should be looked up`() = runBlocking {
                 var requestBody: ByteArray? = null
                 val client = makeTestClient { request ->
                     assertTrue(request.body is OutgoingContent.ByteArrayContent)
@@ -207,7 +206,7 @@ class DoHClientTest {
             }
 
             @Test
-            fun `Invalid record types should be refused`() = runBlockingTest {
+            fun `Invalid record types should be refused`() = runBlocking {
                 val client = makeTestClient {
                     respondDNSMessage(dummyResponseMessage)
                 }
@@ -221,7 +220,7 @@ class DoHClientTest {
             }
 
             @Test
-            fun `DNS Class should be Internet`() = runBlockingTest {
+            fun `DNS Class should be Internet`() = runBlocking {
                 var requestBody: ByteArray? = null
                 val client = makeTestClient { request ->
                     assertTrue(request.body is OutgoingContent.ByteArrayContent)
@@ -237,7 +236,7 @@ class DoHClientTest {
             }
 
             @Test
-            fun `DNSSEC verification should be requested`() = runBlockingTest {
+            fun `DNSSEC verification should be requested`() = runBlocking {
                 var requestBody: ByteArray? = null
                 val client = makeTestClient { request ->
                     assertTrue(request.body is OutgoingContent.ByteArrayContent)
@@ -256,7 +255,7 @@ class DoHClientTest {
         @Nested
         inner class Answer {
             @Test
-            fun `An exception should be thrown if the lookup failed`() = runBlockingTest {
+            fun `An exception should be thrown if the lookup failed`() = runBlocking {
                 val responseMessage = Message()
                 responseMessage.header.rcode = Rcode.SERVFAIL
                 val client = makeTestClient {
@@ -271,7 +270,7 @@ class DoHClientTest {
             }
 
             @Test
-            fun `Exception should be thrown if response is malformed`() = runBlockingTest {
+            fun `Exception should be thrown if response is malformed`() = runBlocking {
                 val client = makeTestClient {
                     respond(ByteArray(0))
                 }
@@ -284,7 +283,7 @@ class DoHClientTest {
             }
 
             @Test
-            fun `Exception should be thrown if data is empty`() = runBlockingTest {
+            fun `Exception should be thrown if data is empty`() = runBlocking {
                 val responseMessage = Message()
                 val client = makeTestClient {
                     respondDNSMessage(responseMessage)
@@ -297,7 +296,7 @@ class DoHClientTest {
             }
 
             @Test
-            fun `One datum should be output if there is only one`() = runBlockingTest {
+            fun `One datum should be output if there is only one`() = runBlocking {
                 val client = makeTestClient {
                     respondDNSMessage(dummyResponseMessage)
                 }
@@ -308,7 +307,7 @@ class DoHClientTest {
             }
 
             @Test
-            fun `Two data items should be output if there are two`() = runBlockingTest {
+            fun `Two data items should be output if there are two`() = runBlocking {
                 val responseMessage = dummyResponseMessage.clone()
                 val additionalRecordData = "1.1.1.1"
                 val additionalRecordAddress = InetAddress.getByName(additionalRecordData)
