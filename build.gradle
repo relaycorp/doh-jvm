@@ -5,7 +5,7 @@ buildscript{
     kotlinCoroutinesVersion = '1.5.2'
     ktorVersion = '1.6.1'
     junit5Version = '5.8.2'
-    okhttpVersion = '4.9.1'
+    okhttpVersion = '4.9.3'
   }
 }
 
@@ -48,7 +48,7 @@ dependencies {
 
   implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
   implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
-  implementation("dnsjava:dnsjava:3.4.0")
+  implementation("dnsjava:dnsjava:3.5.0")
 
   testImplementation("org.jetbrains.kotlin:kotlin-test")
   testImplementation("org.junit.jupiter:junit-jupiter:$junit5Version")
@@ -56,7 +56,7 @@ dependencies {
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion")
   testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
-  testImplementation("org.mockito:mockito-inline:3.11.2")
+  testImplementation("org.mockito:mockito-inline:4.2.0")
   testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
   testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
 }
