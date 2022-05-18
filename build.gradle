@@ -48,7 +48,7 @@ dependencies {
 
   implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
   implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
-  implementation("dnsjava:dnsjava:3.5.0")
+  implementation("dnsjava:dnsjava:3.5.1")
 
   testImplementation("org.jetbrains.kotlin:kotlin-test")
   testImplementation("org.junit.jupiter:junit-jupiter:$junit5Version")
