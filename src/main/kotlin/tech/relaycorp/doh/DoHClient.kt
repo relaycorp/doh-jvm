@@ -10,7 +10,6 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.content.ByteArrayContent
-import io.ktor.util.toByteArray
 import okhttp3.OkHttpClient
 import org.xbill.DNS.DClass
 import org.xbill.DNS.InvalidTypeException
