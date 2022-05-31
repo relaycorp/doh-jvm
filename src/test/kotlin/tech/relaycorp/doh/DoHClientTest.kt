@@ -132,7 +132,7 @@ class DoHClientTest {
                 assertThrows<LookupFailureException> { client.lookUp(recordName, recordType) }
 
             assertEquals(
-                "Unexpected HTTP response code (${HttpStatusCode.BadRequest})",
+                "Returned DNS message is malformed",
                 exception.message
             )
         }
