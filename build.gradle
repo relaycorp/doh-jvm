@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript{
   ext {
-    kotlinCoroutinesVersion = '1.6.1'
+    kotlinCoroutinesVersion = '1.6.3'
     ktorVersion = '2.0.1'
     junit5Version = '5.8.2'
     okhttpVersion = '4.9.3'
