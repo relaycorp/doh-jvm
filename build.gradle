@@ -74,7 +74,7 @@ tasks.withType(KotlinCompile).configureEach {
   kotlinOptions.jvmTarget = "1.8"
 }
 
-tasks.withType(KotlinCompile).all {
+tasks.withType(KotlinCompile).configureEach {
   kotlinOptions.freeCompilerArgs = kotlinOptions.freeCompilerArgs + [
           "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
           "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
@@ -86,7 +86,7 @@ test {
   useJUnitPlatform()
 }
 
-task integrationTest(type: Test) {
+tasks.register('integrationTest', Test) {
   description = 'Integration tests'
   group = 'verification'
 
