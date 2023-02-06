@@ -1,96 +1,19 @@
-name: CI and automatic releases
+name: CI and automated releases
 on:
   pull_request:
   push:
     branches: [ main ]
 jobs:
   ci:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        # Test LTS releases
-        java: [8, 11]
-    name: "java${{ matrix.java }}-${{ matrix.os }}" # Do not change; used by protected branches
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-java@v1
-        with:
-          java-version: ${{ matrix.java }}
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
-
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - uses: eskatos/gradle-command-action@v1
-        with:
-          arguments: build dokkaHtml
+    uses: relaycorp/shared-workflows/.github/workflows/jvm-lib-ci.yml@main
 
   release:
     needs: ci
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-java@v1
-        with:
-          java-version: 8
-
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Generate docs
-        uses: eskatos/gradle-command-action@v1
-        with:
-          arguments: dokkaHtml
-
-      # Ridiculous workaround for https://github.com/Kotlin/dokka/issues/163
-      - name: Move Dokka's assets into a sensible place
-        run: |
-          set -x -o nounset -o errexit -o pipefail
-          cd ./build/dokka/html
-          mv ./styles ./images ./scripts navigation.html index.html ./doh/
-          find ./doh/ -name '*.html' -print0 | xargs -0 sed -i 's;../styles/;styles/;g'
-          find ./doh/ -name '*.html' -print0 | xargs -0 sed -i 's;../images/;images/;g'
-          find ./doh/ -name '*.html' -print0 | xargs -0 sed -i 's;../scripts/;scripts/;g'
-          find ./doh/ -name '*.html' -print0 | xargs -0 sed -i 's;pathToRoot = "../;pathToRoot = ";g'
-          sed -i 's;href="doh/;href=";g' ./doh/navigation.html
-          sed -i 's;href="doh/;href=";g' ./doh/index.html
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 16
-      - name: Install Node.js dependencies
-        run: npm install
-      - name: Publish documentation
-        uses: peaceiris/actions-gh-pages@v3.6.1
-        with:
-          publish_branch: gh-pages
-          publish_dir: ./build/dokka/html/doh
-          allow_empty_commit: false
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Release
-        run: npx semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-          ORG_GRADLE_PROJECT_signingKeyId: ${{ secrets.MAVEN_CENTRAL_SIGNING_KEY_ID }}
-          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_CENTRAL_SIGNING_KEY }}
-          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.MAVEN_CENTRAL_SIGNING_KEY_PASSPHRASE }}
+    uses: relaycorp/shared-workflows/.github/workflows/jvm-lib-release.yml@main
+    with:
+      maven_username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+    secrets:
+      maven_password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+      maven_central_signing_key_id: ${{ secrets.MAVEN_CENTRAL_SIGNING_KEY_ID }}
+      maven_central_signing_key: ${{ secrets.MAVEN_CENTRAL_SIGNING_KEY }}
+      maven_central_signing_key_password: ${{ secrets.MAVEN_CENTRAL_SIGNING_KEY_PASSPHRASE }}
