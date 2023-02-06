@@ -13,7 +13,7 @@ plugins {
   id("org.jetbrains.kotlin.jvm") version "1.6.21"
   id('java-library')
   id("org.jetbrains.dokka") version "1.7.20"
-  id("com.diffplug.spotless") version "5.14.0"
+  id("org.jlleitschuh.gradle.ktlint") version "11.1.0"
   id('jacoco')
   id('idea')
 
@@ -106,20 +106,5 @@ dokkaHtml.configure {
     configureEach {
       reportUndocumented.set(true)
     }
-  }
-}
-
-// Lint
-
-spotless {
-  def ktlintUserData = [
-          "max_line_length": "100",
-          "disabled_rules": "import-ordering"
-  ]
-  kotlin {
-    ktlint("0.37.0").userData(ktlintUserData)
-  }
-  kotlinGradle {
-    ktlint().userData(ktlintUserData)
   }
 }
