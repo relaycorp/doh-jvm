@@ -1,0 +1,12 @@
+name: Process PRs
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+jobs:
+  pr-ci:
+    uses: relaycorp/shared-workflows/.github/workflows/pr-ci.yml@main
