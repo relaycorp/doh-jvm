@@ -10,9 +10,8 @@ jobs:
   release:
     needs: ci
     uses: relaycorp/shared-workflows/.github/workflows/jvm-lib-release.yml@main
-    with:
-      maven_username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
     secrets:
+      maven_username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
       maven_password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
       maven_central_signing_key_id: ${{ secrets.MAVEN_CENTRAL_SIGNING_KEY_ID }}
       maven_central_signing_key: ${{ secrets.MAVEN_CENTRAL_SIGNING_KEY }}
