@@ -52,8 +52,6 @@ class DoHClientTest {
         }
     }
 
-    // https://github.com/dnsjava/dnsjava/issues/146
-    @Suppress("BlockingMethodInNonBlockingContext")
     @Nested
     inner class Lookup {
         private val recordName = "example.com."
@@ -124,15 +122,16 @@ class DoHClientTest {
 
         @Test
         fun `Non-200 responses should be treated as errors`() = runBlocking {
+            val status = HttpStatusCode.BadRequest
             val client = makeTestClient {
-                respond("Whoops", HttpStatusCode.BadRequest)
+                respond("Whoops", status)
             }
 
             val exception =
                 assertThrows<LookupFailureException> { client.lookUp(recordName, recordType) }
 
             assertEquals(
-                "Returned DNS message is malformed",
+                "Unexpected HTTP response code ($status)",
                 exception.message
             )
         }

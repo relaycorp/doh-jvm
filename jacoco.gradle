@@ -41,5 +41,5 @@ tasks.test {
     println("View code coverage at:")
     println("file://$buildDir/reports/coverage/index.html")
   }
-  finalizedBy("jacocoTestReport")
+  finalizedBy("jacocoTestReport", "jacocoTestCoverageVerification")
 }
