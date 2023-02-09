@@ -71,19 +71,13 @@ java {
 }
 
 tasks.withType(KotlinCompile).configureEach {
-  kotlinOptions.jvmTarget = "1.8"
+  kotlinOptions.jvmTarget = JavaVersion.VERSION_11
 }
 
 tasks.withType(KotlinCompile).configureEach {
   kotlinOptions.freeCompilerArgs = kotlinOptions.freeCompilerArgs + [
-          "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-          "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
-          "-Xuse-experimental=kotlin.time.ExperimentalTime"
+          "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
   ]
-}
-
-test {
-  useJUnitPlatform()
 }
 
 tasks.register('integrationTest', Test) {

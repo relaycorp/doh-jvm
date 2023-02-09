@@ -3,12 +3,12 @@ package tech.relaycorp.doh
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.accept
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.ByteArrayContent
 import okhttp3.OkHttpClient
 import org.xbill.DNS.DClass
@@ -45,8 +45,6 @@ public class DoHClient(public val resolverURL: String = DEFAULT_RESOLVER_URL) : 
      * @throws [InvalidQueryException] if [name] or [type] are invalid
      * @throws [LookupFailureException] if the lookup was unsuccessful
      */
-    // https://github.com/dnsjava/dnsjava/issues/146
-    @Suppress("BlockingMethodInNonBlockingContext")
     @Throws(DoHException::class)
     public suspend fun lookUp(name: String, type: String): Answer {
         val querySerialised = makeQuery(name, type)
@@ -55,10 +53,11 @@ public class DoHClient(public val resolverURL: String = DEFAULT_RESOLVER_URL) : 
                 accept(DNS_MESSAGE_CONTENT_TYPE)
                 setBody(ByteArrayContent(querySerialised, DNS_MESSAGE_CONTENT_TYPE))
             }
-        } catch (exc: ClientRequestException) {
-            throw LookupFailureException("Unexpected HTTP response code (${exc.response.status})")
         } catch (exc: IOException) {
             throw LookupFailureException("Failed to connect to $resolverURL", exc)
+        }
+        if (response.status != HttpStatusCode.OK) {
+            throw LookupFailureException("Unexpected HTTP response code (${response.status})")
         }
         return parseAnswer(response.body())
     }
@@ -92,16 +91,16 @@ public class DoHClient(public val resolverURL: String = DEFAULT_RESOLVER_URL) : 
         return Answer(records.map { it.rdataToString() })
     }
 
-    internal companion object {
-        internal const val DEFAULT_RESOLVER_URL: String = "https://cloudflare-dns.com/dns-query"
-
-        internal val DNS_MESSAGE_CONTENT_TYPE = ContentType("application", "dns-message")
-    }
-
     /**
      * Release the underlying resources used by the client.
      */
     override fun close() {
         ktorClient.close()
+    }
+
+    internal companion object {
+        internal const val DEFAULT_RESOLVER_URL: String = "https://cloudflare-dns.com/dns-query"
+
+        private val DNS_MESSAGE_CONTENT_TYPE = ContentType("application", "dns-message")
     }
 }
